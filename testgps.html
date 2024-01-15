@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Show Current Location on Map</title>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+    #coordinates {
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      white-space: nowrap;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Create a button to trigger the location retrieval -->
+<button onclick="initMap()">Show My Current Location</button>
+
+<!-- Create a map container -->
+<div id="map"></div>
+
+<!-- Display coordinates and a link to open in maps -->
+<div id="coordinates"></div>
+
+<script>
+function initMap() {
+  // Check if the Geolocation API is supported by the browser
+  if ('geolocation' in navigator) {
+    // Request location permission and handle the result
+    navigator.geolocation.getCurrentPosition(
+      // Success callback
+      function(position) {
+        // Retrieve latitude and longitude
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        // Display the latitude and longitude in a div
+        const coordinatesElement = document.getElementById('coordinates');
+        coordinatesElement.innerHTML = `
+          Latitude: ${latitude}<br>
+          Longitude: ${longitude}<br>
+          <a href="https://www.google.com/maps?q=${latitude},${longitude}" target="_blank">Open in Maps</a>
+        `;
+
+        // Create a map centered on the user's location
+        const map = new google.maps.Map(document.getElementById('map'), {
+          center: { lat: latitude, lng: longitude },
+          zoom: 15
+        });
+
+        // Create a marker at the user's location
+        const marker = new google.maps.Marker({
+          position: { lat: latitude, lng: longitude },
+          map: map,
+          title: 'Your Location'
+        });
+      },
+      // Error callback
+      function(error) {
+        // Handle errors (e.g., user denied location access)
+        alert('Error getting location: ' + error.message);
+      }
+    );
+  } else {
+    // Geolocation is not supported by the browser
+    alert('Geolocation is not supported by your browser.');
+  }
+}
+</script>
+
+<!-- Include the Google Maps API script with your API key -->
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap">
+</script>
+
+</body>
+</html>
